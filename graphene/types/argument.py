@@ -44,6 +44,7 @@ def to_arguments(args, extra_args=None):
     iter_arguments = chain(args.items(), extra_args)
     arguments = OrderedDict()
     for default_name, arg in iter_arguments:
+        is_custom = False
         if isinstance(arg, Dynamic):
             arg = arg.get_type()
             if arg is None:
@@ -62,10 +63,11 @@ def to_arguments(args, extra_args=None):
             ))
 
         if not isinstance(arg, Argument):
-            raise ValueError('Unknown argument "{}".'.format(default_name))
+            is_custom = True
 
         arg_name = default_name or arg.name
         assert arg_name not in arguments, 'More than one Argument have same name "{}".'.format(arg_name)
-        arguments[arg_name] = arg
+        if not is_custom:
+            arguments[arg_name] = arg
 
     return arguments
